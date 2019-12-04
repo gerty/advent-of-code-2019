@@ -14,7 +14,13 @@ for x in range(146810, 612564):
     passok = False
     for c in range(len(numstr)-1):
         if numstr[c] == numstr[c+1]:
-            passok = True
+            if (c > 0) and (numstr[c-1] != numstr[c]):
+                if (c < len(numstr)-2) and (numstr[c+2] != numstr[c]):
+                    passok = True
+            if (c == 0) and (numstr[c+2] != numstr[c]):
+                passok = True
+            if (c == len(numstr)-2) and (numstr[c-1] != numstr[c]):
+                passok = True
     for c in range(len(numstr)-1):
         if int(numstr[c]) > int(numstr[c+1]):
             passok = False
@@ -23,3 +29,5 @@ for x in range(146810, 612564):
 print(answer)
 
 # not 4729, 1777, 460 (for me), 461, 1748? YES!
+
+# Part 2: 730 too low. 1180!!
