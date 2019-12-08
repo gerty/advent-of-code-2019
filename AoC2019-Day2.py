@@ -5,68 +5,43 @@
 # My input: in file Day02-INPUT.txt
 # Spending some time cleaning it up before using it for future AoC 2019 days
 
-with open('Day02-INPUT.txt', 'r') as f:
-    filedata = f.readlines()
-
 item = 0
-done = False
 result = 0
 myData = []
 
-def intcode (initialMemory, noun, verb):
+
+def computer(memory, noun, verb):
     data = []  # create a list for use inside the function
-    for i in initialMemory:
-        data.append(int(i))  # append only the integers
+    done = False
+    for i in memory:
+        data.append(int(i))  # build local list "data" with only the integers
     data[1] = int(noun)  # initialize the intcode program with predetermined initial values
     data[2] = int(verb)  # all of data[] should be of type integer
-    index = 0
+    address = 0
 
     while not done:
-        if int(data[index+0]) == 1:
-            data[data[index+3]] = data[data[index+1]] + data[data[index+2]]
-            index += 4
+        if int(data[address]) == 1:
+            data[data[address+3]] = data[data[address+1]] + data[data[address+2]]
+            address += 4
 
-        if int(data[index+0]) == 2:
-            data[data[index+3]] = data[data[index+1]] * data[data[index+2]]
-            index += 4
+        if int(data[address]) == 2:
+            data[data[address+3]] = data[data[address+1]] * data[data[address+2]]
+            address += 4
 
-        if int(data[index+0]) == 99:
-            return(data[0])
+        if int(data[address]) == 99:
+            return data[0]
 
 
+with open('Day02-INPUT.txt', 'r') as f:
+    filedata = f.readlines()
 for line in filedata:
     myData = line.split(',')
-print("The answer ot part 1 is: " + str(intcode(myData,12,2)))
+print("The answer to part 1 is: " + str(computer(myData, 12, 2)))
 
 # Part 2 Follows.....
+target = 19690720  # The targeted result
 
-target = 19690720
-
-def flightComp(funcData):
-    donehere = False
-    i = 0
-    while not donehere:
-        if int(funcData[i + 0]) == 1:
-            result = int(funcData[int(funcData[i + 1])]) + int(funcData[int(funcData[i + 2])])
-            funcData[int(funcData[i + 3])] = result
-            i += 4
-
-        if int(funcData[i + 0]) == 2:
-            result = int(funcData[int(funcData[i + 1])]) * int(funcData[int(funcData[i + 2])])
-            funcData[int(funcData[i + 3])] = result
-            i += 4
-
-        if int(funcData[i + 0]) == 99:
-            return(int(funcData[0]))
-
-for x in range(100):
+for x in range(100):  # Cycle through range of possible nouns and verbs
     for y in range(100):
-        myData.clear()
-        for line in filedata:
-            myData = line.split(',')
-        myData[1] = x
-        myData[2] = y
-        if flightComp(myData) == target:
+        if computer(myData, x, y) == target:  # myData from previous file read, compare result of noun/verb to target
             print("The answer to part 2 is: " + str(x*100+y))
-            exit()
-
