@@ -3,51 +3,43 @@
 # Input from Day 2, Problem 1 (and 2) of Advent of Code 2019
 # Input files in same directory
 # My input: in file Day02-INPUT.txt
+# Spending some time cleaning it up before using it for future AoC 2019 days
 
 with open('Day02-INPUT.txt', 'r') as f:
     filedata = f.readlines()
 
-data = []
 item = 0
-index = 0
 done = False
 result = 0
+myData = []
+
+def intcode (initialMemory, noun, verb):
+    data = []  # create a list for use inside the function
+    for i in initialMemory:
+        data.append(int(i))  # append only the integers
+    data[1] = int(noun)  # initialize the intcode program with predetermined initial values
+    data[2] = int(verb)  # all of data[] should be of type integer
+    index = 0
+
+    while not done:
+        if int(data[index+0]) == 1:
+            data[data[index+3]] = data[data[index+1]] + data[data[index+2]]
+            index += 4
+
+        if int(data[index+0]) == 2:
+            data[data[index+3]] = data[data[index+1]] * data[data[index+2]]
+            index += 4
+
+        if int(data[index+0]) == 99:
+            return(data[0])
+
 
 for line in filedata:
-    data = line.split(',')
-    print(data)
-    print(len(data))
-    data[1] = '12'
-    data[2] = '2'
-    print(data)
-    print(len(data))
-    print("Starting: " + str(index))
-
-while not done:
-    if int(data[index+0]) == 1:
-        result = int(data[int(data[index+1])]) + int(data[int(data[index+2])])
-        data[int(data[index+3])] = result
-        index += 4
-        print(data)
-
-    if int(data[index+0]) == 2:
-        result = int(data[int(data[index+1])]) * int(data[int(data[index+2])])
-        data[int(data[index+3])] = result
-        index += 4
-        print(data)
-
-    if int(data[index+0]) == 99:
-        print("The answer is: ")
-        print(int(data[index+0]))
-        print(data)
-        done = True
-
-# Solution to Part 1 left as-is due to not quite understanding how it happened.
+    myData = line.split(',')
+print("The answer ot part 1 is: " + str(intcode(myData,12,2)))
 
 # Part 2 Follows.....
 
-
-myData = []
 target = 19690720
 
 def flightComp(funcData):
@@ -65,7 +57,6 @@ def flightComp(funcData):
             i += 4
 
         if int(funcData[i + 0]) == 99:
-            print("The answer is: ")
             return(int(funcData[0]))
 
 for x in range(100):
@@ -75,10 +66,7 @@ for x in range(100):
             myData = line.split(',')
         myData[1] = x
         myData[2] = y
-        print(myData)
-        print("Checking x = " + str(x) + " and y = " + str(y))
         if flightComp(myData) == target:
-            print(x*100+y)
-            sys.exit()
-
+            print("The answer to part 2 is: " + str(x*100+y))
+            exit()
 
