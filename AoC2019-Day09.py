@@ -1,53 +1,55 @@
 # Code written by @gerty
 
-# Input from Day 6, Problem 1 (and 2) of Advent of Code 2019
+# Input from Day 9, Problem 1 (and 2) of Advent of Code 2019
 # Input files in same directory
-# My input: in file Day06-INPUT.txt
+# My input: in file Day09-INPUT.txt
 
 def computer(compData, inputparam):
-    cycles = 0
+    cycles = 1
     address = 0
     base = 0
     data = []
     for x in compData:
         data.append(int(x))
-
+    for x in range(10000):
+        data.append(0)
     # Using % and // (modulo and floor division to determine numeric values in ones, tens, hundreds, etc.
-    while cycles < 10:
-        cycles += 1
+    while cycles > 0:
         opcode = data[address] % 100
-        print("Opcode: " + str(opcode) + " Address: " + str(address) + " Base: " + str(base))
+        print("For cycle: " + str(cycles) +
+              " Opcode: " + str(opcode) +
+              " Address: " + str(address) +
+              " Base: " + str(base))
         param = [0, 0, 0]  # This array will store the parameters after lookup but before assignment
 
         if opcode == 99:  # finish processing opcodes
-            done = True
             return data[0]  # data in location 0 is returned
 
-        # Every opcode (other than 99) has at least one parameter
+        # Every opcode (other than 99) has one parameter
         if (data[address] % 1000) // 100 == 2:
-            param[0] = data[address + 1] + base  # relative mode (position + base)
+            param[0] = data[data[address + 1]] + base  # relative mode (position + base)
         if (data[address] % 1000) // 100 == 1:
-            param[0] = address + 1  # immediate mode (parameter within instruction)
+            param[0] = data[address + 1]  # immediate mode (parameter within instruction)
         if (data[address] % 1000) // 100 == 0:
-            param[0] = data[address + 1]  # position mode (parameter in referenced position)
+            param[0] = data[data[address + 1]]  # position mode (parameter in referenced position)
 
-        # these opcodes (1,2,5,6,7,8) use 2 or 3 parameters as input
-        if opcode == 5 or opcode == 6 or opcode == 1 or opcode == 2 or opcode == 7 or opcode == 8:
+        # these opcodes (1,2,5,6,7,8) use the second parameter
+        if opcode == 1 or opcode == 2 or opcode == 5 or opcode == 6 or opcode == 7 or opcode == 8:
             if (data[address] % 10000) // 1000 == 2:
-                param[1] = data[address + 2] + base  # relative mode
+                param[1] = data[data[address + 2]] + base  # relative mode
             if (data[address] % 10000) // 1000 == 1:
-                param[1] = address + 2  # immediate mode
+                param[1] = data[address + 2]  # immediate mode
             if (data[address] % 10000) // 1000 == 0:
-                param[1] = data[address + 2]  # position mode
+                param[1] = data[data[address + 2]]  # position mode
 
-        # these opcodes (1,2,7,8) use 3 parameters as input
+        # these opcodes (1,2,7,8) use third parameters ** Since 3rd parameter is output, only pass pointer **
         if opcode == 1 or opcode == 2 or opcode == 7 or opcode == 8:
             if data[address] // 10000 == 2:
-                param[2] = data[address + 3] + base  # relative mode
+                param[2] = address + 3 + base  # relative mode
             if data[address] // 10000 == 1:  # immediate mode should never happen here
                 print("Immediate mode attempted for parameter write at address: " + str(address + 3))
             if data[address] // 10000 == 0:
-                param[2] = data[address + 3]  # position mode
+                param[2] = address + 3  # position mode
         print("Parameters = " + str(param))
 
         if opcode == 1:  # ADDS parameter 1 to parameter 2 and puts in position for parameter 3
@@ -95,14 +97,13 @@ def computer(compData, inputparam):
         if opcode == 9:  # adjust relative BASE by number in parameter 1
             base += param[0]
             address += 2  # instruction length (1) plus opcode
+        cycles += 1
 
-
-with open('Day05-INPUT.txt', 'r') as f:
+with open('Day09-INPUT.txt', 'r') as f:
     filedata = f.readlines()
+myData = []
 for line in filedata:
     myData = line.split(',')
 
 print(myData)
 print("Final result in location 0 after running opcodes to completion: " + str(computer(myData, 5)))
-
-# 773660 is the right answer to Day 5 (with an input of 5)
